@@ -86,28 +86,30 @@ pub mod generics_traits_and_lifetimes {
                 println!("The largest number is: {}", result_num);
 
                 let char_list = vec!['y', 'm', 'a', 'q'];
-
                 let result_char = largest_char(&char_list);
+                let charb = &char_list[0];
+
+                let charb = char_list[0];
                 println!("The largest character is: {}", result_char);
             }
 
             pub mod generic_refactoring {
                 // note that here we have to declare the generic before the parens and after the
                 // function declaration to be able to use it
-                pub fn largest_anything<T>(list: &[T]) -> &[T] {
-                    let mut largest = &list[0];
+                // pub fn largest_anything<T>(list: &[T]) -> &[T] {
+                //     let mut largest = &list[0];
 
-                for item in list {
-                    // cannot perform a binary operation on T because
-                    // no methods or functions are known to the compiler
-                    if item > largest {
-                        largest = item;
-                    }
-                }
+                // for item in list {
+                //     // cannot perform a binary operation on T because
+                //     // no methods or functions are known to the compiler
+                //     if item > largest {
+                //         largest = item;
+                //     }
+                // }
 
-                // causes an error here too.
-                return largest;
-                }
+                // // causes an error here too.
+                // return largest;
+                // }
 
                 // structs can hold generics so that their types can be allocated at the time of creation
                 pub mod struct_generics {
@@ -210,18 +212,159 @@ pub mod generics_traits_and_lifetimes {
                 }
             }
         }
+        pub mod traits_defining_shared_behavior {
+            pub mod defining_a_trait {
+                // a declaration of a trait
+                pub trait Summary {
+                    // any methods defined in the trait end with a semicolon
+                    // the caller is responsible for the body of the method
+                    fn summarize(&self) -> String;
+                }
+            }
+
+            pub mod implementing_a_trait_on_a_type {
+                use std::fmt::format;
+
+                // declaration of a trait called summerize
+                pub trait Summary {
+                    // referes to self which is whatever the trait is called on
+                    fn summarize(&self) -> String;
+                }
+
+                // declaration of a struct called NewsArticle
+                pub struct NewsArticle {
+                    pub headline: String,
+                    pub location: String,
+                    pub author: String,
+                    pub content: String,
+                }
+
+                // here we implement Summary for NewsArticle
+                // note the use of the for keyword, this attaches the trait to the structu
+                impl Summary for NewsArticle {
+                    // we then add the summarize function to the trait
+                    fn summarize(&self) -> String {
+                        // and define the behaviour inside of the code body
+                        format!("{}, by {} ({})", self.headline, self.author, self.location)
+                    }
+                }
+
+                // this is the same as the implementation above just using the fields in the struct
+                // which are different.
+                pub struct Tweet {
+                    pub username: String,
+                    pub content: String,
+                    pub reply: bool,
+                    pub retweet: bool,
+                }
+
+                impl Summary for Tweet {
+                    fn summarize(&self) -> String {
+                        format!("{}: {}", self.username, self.content)
+                    }
+                }
+
+                // example of calling the trait on a Tweet struct
+                pub fn summarize_tweet() {
+                    let tweet = Tweet {
+                        username: "Max Cock".to_string(),
+                        content: "I am some content".to_string(),
+                        reply: false,
+                        retweet: false,
+                    };
+
+                    println!("1 new tweet: {}", tweet.summarize())
+                    // prints "1 new tweet: Max Cock: I am some content"
+                }
+            }
+
+            pub mod default_implementations {
+                // if we do not override the default summarize method then
+                // it will print read more...
+                pub trait Summary {
+                    fn summarize(&self) -> String {
+                        "(Read More...)".to_string()
+                    }
+                }
+                // defines the struct for a news article
+                pub struct NewsArticle {
+                    headline: String,
+                    location: String,
+                    author: String,
+                    content: String,
+                }
+
+                // as we have no custom implementation the Summary traits default implementation will occur
+                impl Summary for NewsArticle {}
+
+                pub fn implementing_default_trait() {
+                    // creates a new article from the NewsArticle Struct
+                    let article = NewsArticle {
+                        headline: String::from("Penguins win the Stanley Cup Championship!"),
+                        location: String::from("Pittsburgh, PA, USA"),
+                        author: String::from("Iceburgh"),
+                        content: String::from(
+                            "The Pittsburgh Penguins once again are the best \
+                            hockey team in the NHL",
+                        ),
+                    };
+                    // Prints the line
+                    println!("New article available: {}", article.summarize());
+                    // output = New article available: (Read More...)
+                }
+
+                pub mod extended_calling_other_methods_in_traits {
+                    pub trait Summary {
+                        fn summerize_author(&self) -> String;
+                        fn summarize(&self) -> String {
+                            format!("(Read more from {}...)", self.summerize_author())
+                        }
+                    }
+
+                    pub struct Tweet {
+                        username: String,
+                        content: String,
+                        reply: bool,
+                        retweet: bool,
+                    }
+
+                    impl Summary for Tweet {
+                        fn summerize_author(&self) -> String {
+                            format!("@{}", self.username)
+                        }
+                    }
+
+                    pub fn extended_calling_traits() {
+                        let tweet = Tweet {
+                            username: String::from("Horse_ebooks"),
+                            content: String::from("Of course, as you probably already know people"),
+                            reply: false,
+                            retweet: false,
+                        };
+
+                        println!("1 new tweet: {}", tweet.summarize());
+                    }
+                }
+            }
+        }
     }
 }
 
+use generics_traits_and_lifetimes::generics::generic_data_types::*;
 use generics_traits_and_lifetimes::generics::removing_duplication_by_extracting_a_function::{
     largest_number, largest_number_2, using_largest_number_refactored,
 };
-
-use generics_traits_and_lifetimes::generics::generic_data_types::*;
+use generics_traits_and_lifetimes::*;
+// use generics_traits_and_lifetimes::generics::traits_defining_shared_behavior::implementing_a_trait_on_a_type::{summarize_tweet};
+use generics_traits_and_lifetimes::generics::traits_defining_shared_behavior::default_implementations::{implementing_default_trait};
+use generics_traits_and_lifetimes::generics::traits_defining_shared_behavior::default_implementations::extended_calling_other_methods_in_traits::{extended_calling_traits};
 
 fn main() {
     // largest_number();
     // largest_number_2();
     // using_largest_number_refactored();
-    use_largest_char_i32_example();
+    // use_largest_char_i32_example();
+    // summarize_tweet();
+    implementing_default_trait();
+    extended_calling_traits();
 }
