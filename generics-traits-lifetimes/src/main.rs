@@ -350,6 +350,8 @@ pub mod generics_traits_and_lifetimes {
     }
 }
 
+use std::vec;
+
 use generics_traits_and_lifetimes::generics::generic_data_types::*;
 use generics_traits_and_lifetimes::generics::removing_duplication_by_extracting_a_function::{
     largest_number, largest_number_2, using_largest_number_refactored,
@@ -359,12 +361,84 @@ use generics_traits_and_lifetimes::*;
 use generics_traits_and_lifetimes::generics::traits_defining_shared_behavior::default_implementations::{implementing_default_trait};
 use generics_traits_and_lifetimes::generics::traits_defining_shared_behavior::default_implementations::extended_calling_other_methods_in_traits::{extended_calling_traits};
 
+fn solution(word: &str, ending: &str) -> bool {
+    let word_length = word.len();
+    let start_point = &word.len() - &ending.len();
+    let word_to_match = &word[start_point..word_length];
+    println!("{}", word_to_match == ending);
+    word_to_match == ending
+}
+
+fn find_multiples(n: u32, limit: u32) -> Vec<u32> {
+    let mut multiples = Vec::new();
+    for num in 0..=limit {
+        if num % n == 0 {
+            multiples.push(num);
+        }
+    }
+    return multiples;
+}
+
+// fn stray(arr: &[u32]) -> u32 {
+//     let mut candidate1 = 0;
+//     let mut candidate2 = 0;
+//     let mut count1 = 0;
+//     let mut count2 = 0;
+
+//     for num in arr {
+//         if *num == candidate1 {
+//             count1 += 1;
+//         } else if *num == candidate2 {
+//             count2 += 1;
+//         } else {
+//             if count1 == 0 {
+//                 candidate1 = *num;
+//                 count1 = 1;
+//             } else if count2 == 0 {
+//                 candidate2 = *num;
+//                 count2 = 1;
+//             } else {
+//                 count1 -= 1;
+//                 count2 -= 1;
+//             }
+//         }
+//     }
+
+//     if count1 == 1 {
+//         println!("{}", candidate1);
+//         candidate1
+//     } else {
+//         println!("{}", candidate2);
+//         candidate2
+//     }
+// }
+
+fn stray(arr: &[u32]) -> u32 {
+    // the fold method on iter takes a starting value and a closure that will use the bitwise
+    // XOR operator to return a value if it is unique.
+    let unique_num = arr.iter().fold(0, |acc, el| acc ^ el);
+
+    println!("{}", unique_num);
+    return unique_num;
+}
+
 fn main() {
     // largest_number();
     // largest_number_2();
     // using_largest_number_refactored();
     // use_largest_char_i32_example();
     // summarize_tweet();
-    implementing_default_trait();
-    extended_calling_traits();
+    // solution("abc", "c");
+    // solution("strawberry", "bannana");
+    // solution("Hi there", "ere");
+    // implementing_default_trait();
+    // extended_calling_traits();
+
+    // find_multiples(2, 2000);
+    let vector = vec![0, 0, 0, 0, 1, 0];
+
+    let vecb = vec![3, 2, 2, 2, 2];
+
+    stray(&vector);
+    stray(&vecb);
 }
